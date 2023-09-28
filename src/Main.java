@@ -1,4 +1,4 @@
-import java.util.Random;
+import moe.cark.hw1.PersonDataManager;
 
 public class Main {
     public static void main(String[] args) {

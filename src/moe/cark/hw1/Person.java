@@ -1,3 +1,5 @@
+package moe.cark.hw1;
+
 /**
  * todo
  */
@@ -24,6 +26,6 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{age=%d, height=%s, weight=%s, name='%s', gender='%s'}".formatted(age, height, weight, name, gender);
+        return "moe.cark.hw1.Person{age=%d, height=%s, weight=%s, name='%s', gender='%s'}".formatted(age, height, weight, name, gender);
     }
 }

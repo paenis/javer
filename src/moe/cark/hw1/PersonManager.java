@@ -1,3 +1,5 @@
+package moe.cark.hw1;
+
 public class PersonManager {
     public static void main(String[] args) {
         do {
