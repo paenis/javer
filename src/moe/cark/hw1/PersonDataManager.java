@@ -1,25 +1,22 @@
 package moe.cark.hw1;
 
-import moe.cark.hw1.Person;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
 public class PersonDataManager {
-    Person[] people; // size based on file
+    private static Person[] people; // size based on file
 
-    public PersonDataManager() {
-        people = new Person[0];
-    }
-
-    public PersonDataManager(Person[] people) {
-        this.people = people;
-    }
-
+    /**
+     * Reads data from a file and builds an array of Person objects.
+     *
+     * @param location the file path of the data file
+     * @throws IllegalArgumentException if the file contains invalid data
+     * @throws RuntimeException         if an error occurs while reading the file
+     */
     // should either return or not be static?
-    public /*static*/ void buildFromFile(String location) throws IllegalArgumentException {
+    public static void buildFromFile(String location) throws IllegalArgumentException {
         try (BufferedReader reader = new BufferedReader(new FileReader(location))) {
             List<String> lines = reader.lines().skip(1).toList(); // first line is header
             Person[] tempPeople = new Person[lines.size()];
@@ -36,10 +33,11 @@ public class PersonDataManager {
                 // parse - assume order is name,gender,age,height,weight
                 String name = data[0];
                 if (name.matches(".*\\d.*"))
-                    throw new IllegalArgumentException("name contains digits: %s".formatted(data[0])); // todo nicer error
+                    throw new IllegalArgumentException("name contains digits: %s".formatted(data[0]));
 
                 String gender = data[1];
-                if (!gender.matches("^[MF]$")) throw new IllegalArgumentException("invalid gender :)");
+                if (!gender.matches("^[MF]$"))
+                    throw new IllegalArgumentException("invalid gender: %s".formatted(data[1]));
 
                 int age;
                 try {
@@ -70,27 +68,63 @@ public class PersonDataManager {
             people = new Person[tempPeople.length];
             System.arraycopy(tempPeople, 0, people, 0, tempPeople.length);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("error reading file", e);
         }
 
     }
 
-    public void addPerson(Person newPerson) throws PersonAlreadyExistsException {
+    /**
+     * Adds a new Person object to the existing array of people.
+     *
+     * @param newPerson the Person object to add
+     * @throws PersonAlreadyExistsException if the person already exists in the array
+     */
+    public static void addPerson(Person newPerson) throws PersonAlreadyExistsException {
         for (Person person : people) {
             if (person.equals(newPerson)) throw new PersonAlreadyExistsException(); // maybe
         }
-        // todo
+
+        // resize and add to array
+        people = new Person[people.length + 1];
+        System.arraycopy(people, 0, people, 0, people.length - 1);
+        people[people.length - 1] = newPerson;
     }
 
-    public void getPerson(String name) throws PersonDoesNotExistException {
-        // todo
+    /**
+     * Retrieves a Person object with the specified name from the array of people.
+     *
+     * @param name the name of the person to retrieve
+     * @return the Person object with the specified name
+     * @throws PersonDoesNotExistException if the person does not exist in the array
+     */
+    public static Person getPerson(String name) throws PersonDoesNotExistException {
+        for (Person person : people) {
+            if (person.name.equals(name)) return person;
+        }
+        throw new PersonDoesNotExistException("person does not exist: %s".formatted(name));
     }
 
-    public void removePerson(String name) throws PersonDoesNotExistException {
-        // todo
+    /**
+     * Removes a Person object with the specified name from the array of people.
+     *
+     * @param name the name of the person to remove
+     * @throws PersonDoesNotExistException if the person does not exist in the array
+     */
+    public static void removePerson(String name) throws PersonDoesNotExistException {
+        for (int i = 0; i < people.length; i++) {
+            if (people[i].name.equals(name)) {
+                // copy all elements except the one to remove
+                Person[] tempPeople = new Person[people.length - 1];
+                System.arraycopy(people, 0, tempPeople, 0, i);
+                System.arraycopy(people, i + 1, tempPeople, i, people.length - i - 1);
+                people = tempPeople;
+                return;
+            }
+        }
+        throw new PersonDoesNotExistException("person does not exist: %s".formatted(name));
     }
 
-    public void printTable() {
+    public static void printTable() {
         StringBuilder sb = new StringBuilder();
         sb.append("Name\t|\tGender\t|\tAge\t|\tHeight\t|\tWeight\n= = = = = = = = = = = = = = = = = = = = = = = = = =\n");
         for (Person person : people) {
