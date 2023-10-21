@@ -1,6 +1,6 @@
-import moe.cark.hw1.Person;
-import moe.cark.hw1.PersonDataManager;
-import moe.cark.hw1.PersonDoesNotExistException;
+import cse214.hw1.Person;
+import cse214.hw1.PersonDataManager;
+import cse214.hw1.PersonDoesNotExistException;
 
 public class Main {
     public static void main(String[] args) {

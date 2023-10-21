@@ -1,10 +1,14 @@
-package moe.cark.hw1;
+package cse214.hw1;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
+/**
+ * The PersonDataManager class is responsible for reading, managing, and manipulating
+ * an array of Person objects. It provides methods to build the array from a file,
+ * add new Person objects, retrieve and remove existing Person objects, print a table
+ * of Person objects, and save the data to a file.
+ */
 public class PersonDataManager {
     private static Person[] people; // size based on file
 
@@ -15,7 +19,7 @@ public class PersonDataManager {
      * @throws IllegalArgumentException if the file contains invalid data
      * @throws RuntimeException         if an error occurs while reading the file
      */
-    // should either return or not be static?
+    // should either return or not be static? or entire class should be static?
     public static void buildFromFile(String location) throws IllegalArgumentException {
         try (BufferedReader reader = new BufferedReader(new FileReader(location))) {
             List<String> lines = reader.lines().skip(1).toList(); // first line is header
@@ -67,8 +71,9 @@ public class PersonDataManager {
             // set people
             people = new Person[tempPeople.length];
             System.arraycopy(tempPeople, 0, people, 0, tempPeople.length);
+            // reader is auto-closed
         } catch (IOException e) {
-            throw new RuntimeException("error reading file", e);
+            throw new RuntimeException("Cannot read file. Did you enter the correct path? (Try using an absolute file path)", e);
         }
 
     }
@@ -80,14 +85,21 @@ public class PersonDataManager {
      * @throws PersonAlreadyExistsException if the person already exists in the array
      */
     public static void addPerson(Person newPerson) throws PersonAlreadyExistsException {
+        // get index to insert at
+        int idx = 0;
         for (Person person : people) {
-            if (person.equals(newPerson)) throw new PersonAlreadyExistsException(); // maybe
+            if (person.equals(newPerson)) // having two people with the same name is allowed per the assignment, even though it's not a good idea
+                throw new PersonAlreadyExistsException("A person with the same attributes already exists");
+            if (person.getName().compareTo(newPerson.getName()) > 0) break; // name is greater, insert before
+            idx++;
         }
 
         // resize and add to array
-        people = new Person[people.length + 1];
-        System.arraycopy(people, 0, people, 0, people.length - 1);
-        people[people.length - 1] = newPerson;
+        Person[] tempPeople = new Person[people.length + 1];
+        System.arraycopy(people, 0, tempPeople, 0, idx);
+        tempPeople[idx] = newPerson;
+        System.arraycopy(people, idx, tempPeople, idx + 1, people.length - idx);
+        people = tempPeople;
     }
 
     /**
@@ -99,9 +111,9 @@ public class PersonDataManager {
      */
     public static Person getPerson(String name) throws PersonDoesNotExistException {
         for (Person person : people) {
-            if (person.name.equals(name)) return person;
+            if (person.getName().equals(name)) return person;
         }
-        throw new PersonDoesNotExistException("person does not exist: %s".formatted(name));
+        throw new PersonDoesNotExistException("Requested person does not exist: %s".formatted(name));
     }
 
     /**
@@ -112,7 +124,7 @@ public class PersonDataManager {
      */
     public static void removePerson(String name) throws PersonDoesNotExistException {
         for (int i = 0; i < people.length; i++) {
-            if (people[i].name.equals(name)) {
+            if (people[i].getName().equals(name)) {
                 // copy all elements except the one to remove
                 Person[] tempPeople = new Person[people.length - 1];
                 System.arraycopy(people, 0, tempPeople, 0, i);
@@ -121,17 +133,42 @@ public class PersonDataManager {
                 return;
             }
         }
-        throw new PersonDoesNotExistException("person does not exist: %s".formatted(name));
+        throw new PersonDoesNotExistException("Requested person does not exist: %s".formatted(name));
     }
 
+    /**
+     * Prints a table of Person objects.
+     * <p>
+     * The table displays the Name, Age, Gender, Height, and Weight of each Person
+     * object in the array of people.
+     */
     public static void printTable() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Name\t|\tGender\t|\tAge\t|\tHeight\t|\tWeight\n= = = = = = = = = = = = = = = = = = = = = = = = = =\n");
+        sb.append("    Name    |    Age   |  Gender |       Height        |      Weight      \n");
+        sb.append("------------+----------+---------+---------------------+------------------\n");
         for (Person person : people) {
             sb.append(person.toString()).append("\n");
         }
         System.out.println(sb);
     }
 
-
+    /**
+     * Saves the data of Person objects to a file.
+     * <p>
+     * The method writes the data of each Person object in the array of people
+     * to a file with the given name. The data is formatted as comma-separated values,
+     * with each line representing a single Person object.
+     *
+     * @param name the name of the file to save the data to
+     * @throws IOException if an I/O error occurs while writing to the file
+     */
+    public static void saveToFile(String name) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(name))) {
+            writer.write("Name,Sex,Age,\"Height (in)\",\"Weight (lbs)\"\n");
+            for (Person person : people) {
+                writer.write("%s,%s,%d,%.1f,%.1f\n".formatted(person.getName(), person.getGender(), person.getAge(), person.getHeight(), person.getWeight()));
+            }
+            // writer is auto-closed. the downside is that the file is still created even if there is an error
+        }
+    }
 }

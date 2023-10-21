@@ -1,4 +1,4 @@
-package moe.cark.hw1;
+package cse214.hw1;
 
 /**
  * Exception thrown when a person does not exist.
