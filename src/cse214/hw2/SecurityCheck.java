@@ -29,7 +29,7 @@ public class SecurityCheck {
         Line currentLine = headLine;
         int[] lineLengths = new int[lineCount];
         for (int i = 0; currentLine != null; currentLine = currentLine.getLineLink(), i++) {
-            lineLengths[i] = currentLine.length;
+            lineLengths[i] = currentLine.getLength();
             if (currentLine.seatTaken(seatNumber)) {
                 throw new TakenSeatException("seat %d is already taken".formatted(seatNumber));
             }
@@ -38,7 +38,7 @@ public class SecurityCheck {
         // find the first line with the least amount of people
         int minLineLength = Arrays.stream(lineLengths).min().orElseThrow(); // safety: there will always be at least one line
         currentLine = headLine;
-        while (currentLine.length != minLineLength) {
+        while (currentLine.getLength() != minLineLength) {
             currentLine = currentLine.getLineLink();
         }
 
@@ -56,9 +56,36 @@ public class SecurityCheck {
         addPerson(person.getName(), person.getSeatNumber());
     }
 
+    /**
+     * Removes the next attendee, maintaining constraints.
+     *
+     * @return the person who was removed
+     * @throws AllLinesEmptyException if all lines are empty
+     */
     public Person removeNextAttendee() throws AllLinesEmptyException {
-        // todo
-        return null;
+        // should remove from longest line(s) first
+
+        // find longest
+        Line currentLine = headLine;
+        int[] lineLengths = new int[lineCount];
+        for (int i = 0; currentLine != null; currentLine = currentLine.getLineLink(), i++) {
+            lineLengths[i] = currentLine.getLength();
+        }
+
+        int maxLineLength = Arrays.stream(lineLengths).max().orElseThrow(); // safety: there will always be at least one line
+        // assert that there is at least one person in the longest line
+        if (maxLineLength == 0) {
+            throw new AllLinesEmptyException("all lines are empty");
+        }
+
+        // find first line with max length
+        currentLine = headLine;
+        while (currentLine.getLength() != maxLineLength) {
+            currentLine = currentLine.getLineLink();
+        }
+
+        // remove from line
+        return currentLine.removeFrontPerson();
     }
 
     public void addNewLines(int newLines) throws InvalidLineCountException {
@@ -69,7 +96,7 @@ public class SecurityCheck {
      * Removes the specified lines, maintaining constraints.
      *
      * @param removedLines an array of lines to be removed
-     * @throws LineDoesNotExistException if a line does not exist in the list
+     * @throws LineDoesNotExistException  if a line does not exist in the list
      * @throws SingleLineRemovalException if all lines are being removed
      */
     public void removeLines(int[] removedLines) throws LineDoesNotExistException, SingleLineRemovalException {
@@ -117,7 +144,7 @@ public class SecurityCheck {
             lineIndex++;
         }
 
-        while (tempLine.length > 0) {
+        while (tempLine.getLength() > 0) {
             try {
                 addPerson(tempLine.removeFrontPerson());
             } catch (TakenSeatException e) {

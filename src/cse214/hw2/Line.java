@@ -1,15 +1,15 @@
 package cse214.hw2;
 
 public class Line {
-    Person headPerson; // "front", lowest seat number
-    Person tailPerson; // "back", highest seat number
-    int length;
-    Line lineLink;
+    private Person headPerson; // "front", lowest seat number
+    private Person tailPerson; // "back", highest seat number
+    private int length;
+    private Line lineLink;
 
     public Line() {
         headPerson = null;
         tailPerson = null;
-        length = 0;
+        setLength(0);
         lineLink = null;
     }
 
@@ -49,7 +49,7 @@ public class Line {
                 attendee.setNextPerson(currentPerson);
             }
         }
-        length++;
+        setLength(getLength() + 1);
     }
 
     /**
@@ -60,8 +60,8 @@ public class Line {
     public Person removeFrontPerson() {
         Person removedPerson = headPerson;
         headPerson = headPerson.getNextPerson();
-        length--;
-        if (length == 0) {
+        setLength(getLength() - 1);
+        if (getLength() == 0) {
             tailPerson = null;
         }
         return removedPerson;
@@ -72,7 +72,7 @@ public class Line {
      *
      * @param seatNumber the seat number to check
      * @return true if the seat is taken, false otherwise
-     */
+     */ // convenience method
     public boolean seatTaken(int seatNumber) {
         Person currentPerson = headPerson;
         while (currentPerson != null) {
@@ -84,22 +84,33 @@ public class Line {
         return false;
     }
 
+    /**
+     * Adds all attendees from a given line to the current list.
+     *
+     * @param line the line containing the attendees to add
+     */ // convenience method
     public void addAllFromLine(Line line) {
         Person currentPerson = line.headPerson;
         while (currentPerson != null) {
             addPerson(currentPerson);
             currentPerson = currentPerson.getNextPerson();
-            length++;
+            setLength(getLength() + 1);
         }
     }
 
+
+    /**
+     * Adds all attendees from a given line to the tail of the current list as-is.
+     *
+     * @param line the line containing the attendees to add
+     */ // convenience method
     public void addAllFromLineUnordered(Line line) {
         Person currentPerson = line.headPerson;
         while (currentPerson != null) {
             tailPerson.setNextPerson(currentPerson);
             tailPerson = currentPerson;
             currentPerson = currentPerson.getNextPerson();
-            length++;
+            setLength(getLength() + 1);
         }
     }
 
@@ -110,5 +121,13 @@ public class Line {
 
     public void setLineLink(Line lineLink) {
         this.lineLink = lineLink;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 }
