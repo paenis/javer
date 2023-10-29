@@ -13,6 +13,22 @@ public class Line {
         lineLink = null;
     }
 
+    public Person getHeadPerson() {
+        return headPerson;
+    }
+
+    public Line getLineLink() {
+        return lineLink;
+    }
+
+    public void setLineLink(Line lineLink) {
+        this.lineLink = lineLink;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
     /**
      * Adds a person to the list of attendees.
      *
@@ -98,7 +114,6 @@ public class Line {
         }
     }
 
-
     /**
      * Adds all attendees from a given line to the tail of the current list as-is.
      *
@@ -107,7 +122,11 @@ public class Line {
     public void addAllFromLineUnordered(Line line) {
         Person currentPerson = line.headPerson;
         while (currentPerson != null) {
-            tailPerson.setNextPerson(currentPerson);
+            if (headPerson == null) {
+                headPerson = currentPerson;
+            } else {
+                tailPerson.setNextPerson(currentPerson);
+            }
             tailPerson = currentPerson;
             currentPerson = currentPerson.getNextPerson();
             length++;
@@ -115,15 +134,4 @@ public class Line {
     }
 
 
-    public Line getLineLink() {
-        return lineLink;
-    }
-
-    public void setLineLink(Line lineLink) {
-        this.lineLink = lineLink;
-    }
-
-    public int getLength() {
-        return length;
-    }
 }
