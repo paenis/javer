@@ -9,7 +9,7 @@ public class Line {
     public Line() {
         headPerson = null;
         tailPerson = null;
-        setLength(0);
+        length = 0;
         lineLink = null;
     }
 
@@ -49,7 +49,7 @@ public class Line {
                 attendee.setNextPerson(currentPerson);
             }
         }
-        setLength(getLength() + 1);
+        length++;
     }
 
     /**
@@ -60,8 +60,8 @@ public class Line {
     public Person removeFrontPerson() {
         Person removedPerson = headPerson;
         headPerson = headPerson.getNextPerson();
-        setLength(getLength() - 1);
-        if (getLength() == 0) {
+        length--;
+        if (length == 0) {
             tailPerson = null;
         }
         return removedPerson;
@@ -94,7 +94,7 @@ public class Line {
         while (currentPerson != null) {
             addPerson(currentPerson);
             currentPerson = currentPerson.getNextPerson();
-            setLength(getLength() + 1);
+            length++;
         }
     }
 
@@ -110,7 +110,7 @@ public class Line {
             tailPerson.setNextPerson(currentPerson);
             tailPerson = currentPerson;
             currentPerson = currentPerson.getNextPerson();
-            setLength(getLength() + 1);
+            length++;
         }
     }
 
@@ -125,9 +125,5 @@ public class Line {
 
     public int getLength() {
         return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
     }
 }
