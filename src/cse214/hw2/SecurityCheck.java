@@ -198,7 +198,7 @@ public class SecurityCheck {
     public void removeLines(int[] removedLines) throws LineDoesNotExistException, SingleLineRemovalException {
         // assert that the lines exist
         if (Arrays.stream(removedLines).anyMatch(line -> (line > lineCount || line < 1))) {
-            throw new LineDoesNotExistException("line does not exist: %d. linecount: %d".formatted(Arrays.stream(removedLines).filter(line -> (line > lineCount || line < 1)).findFirst().orElseThrow(), lineCount));
+            throw new LineDoesNotExistException("line does not exist: %d".formatted(Arrays.stream(removedLines).filter(line -> (line > lineCount || line < 1)).findFirst().orElseThrow()));
         }
         if (removedLines.length == 0) {
             throw new LineDoesNotExistException("no lines specified");
