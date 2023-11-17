@@ -44,11 +44,60 @@ public class Book {
         this.checkedOut = false;
     }
 
+    public Book(String name, String author, String genre, Condition bookCondition, long ISBN, long checkOutUserID, int yearPublished, Date checkOutDate, Book nextBook, boolean checkedOut) {
+        this.name = name;
+        this.author = author;
+        this.genre = genre;
+        this.bookCondition = bookCondition;
+        this.ISBN = ISBN;
+        this.checkOutUserID = checkOutUserID;
+        this.yearPublished = yearPublished;
+        this.checkOutDate = checkOutDate;
+        this.nextBook = nextBook;
+        this.checkedOut = checkedOut;
+    }
+
     public long getISBN() {
         return ISBN;
     }
 
     public Book getNextBook() {
         return nextBook;
+    }
+
+    public void setNextBook(Book nextBook) {
+        this.nextBook = nextBook;
+    }
+
+    // i don't really like this
+    public <C extends Comparable<C>> C getSortCriteria(SortCriteria sortCriteria) {
+        return (C) switch (sortCriteria) {
+            case ISBN -> this.ISBN;
+            case NAME -> this.name;
+            case AUTHOR -> this.author;
+            case GENRE -> this.genre;
+            case YEAR -> this.yearPublished;
+            case CONDITION -> this.bookCondition;
+        };
+    }
+
+    public boolean getCheckedOut() {
+        return checkedOut;
+    }
+
+    public void setCheckedOut(boolean checkedOut) {
+        this.checkedOut = checkedOut;
+    }
+
+    public long getCheckOutUserID() {
+        return checkOutUserID;
+    }
+
+    public void setCheckOutUserID(long checkOutUserId) {
+        this.checkOutUserID = checkOutUserId;
+    }
+
+    public void setCheckOutDate(Date checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
 }

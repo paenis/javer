@@ -6,5 +6,5 @@ package cse214.hw3;
  * The conditions are: {@code NEW}, {@code GOOD}, {@code BAD}, and {@code REPLACE}.
  */
 public enum Condition implements Comparable<Condition> { // comparable is implicitly implemented
-    NEW, GOOD, BAD, REPLACE;
+    NEW, GOOD, BAD, REPLACE
 }
