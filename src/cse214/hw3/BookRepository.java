@@ -21,7 +21,7 @@ public class BookRepository {
         return shelves[ISBNFirstDigit(ISBN)];
     }
 
-    private Book findBook(long ISBN) {
+    public Book findBook(long ISBN) {
         Book cursorBook = findShelf(ISBN).getHeadBook();
         while (cursorBook != null) {
             if (cursorBook.getISBN() == ISBN) {
@@ -71,7 +71,8 @@ public class BookRepository {
         }
         book.setCheckedOut(true);
         book.setCheckOutUserID(checkOutUserID);
-        book.setCheckOutDate(dueDate);
+        book.setCheckOutDate(new Date()/*current*/);
+        book.setDueDate(dueDate);
     }
 
     public void addBook(/*int*/long addISBN, String addName, String addAuthor, String addGenre, Condition addCondition /*no year!*/) throws InvalidISBNException, BookAlreadyExistsException {
@@ -81,7 +82,7 @@ public class BookRepository {
         }
 
         // add book
-        findShelf(addISBN).addBook(new Book(addName, addAuthor, addGenre, addCondition, addISBN, 0, 0, new Date(), null, false));
+        findShelf(addISBN).addBook(new Book(addName, addAuthor, addGenre, addCondition, addISBN, 0, 0, new Date(), new Date(), null, false));
     }
 
     public void removeBook(long removeISBN) throws InvalidISBNException {

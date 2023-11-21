@@ -13,6 +13,7 @@ public class Book {
     private int yearPublished;
 
     private Date checkOutDate;
+    private Date dueDate;
 
     private Book nextBook;
 
@@ -27,8 +28,10 @@ public class Book {
         this.checkOutUserID = 0;
         this.yearPublished = 0;
         this.checkOutDate = new Date();
+        this.dueDate = new Date();
         this.nextBook = null;
         this.checkedOut = false;
+
     }
 
     public Book(String name, String author, String genre, long ISBN, int yearPublished) {
@@ -40,11 +43,12 @@ public class Book {
         this.checkOutUserID = 0;
         this.yearPublished = yearPublished;
         this.checkOutDate = new Date();
+        this.dueDate = new Date();
         this.nextBook = null;
         this.checkedOut = false;
     }
 
-    public Book(String name, String author, String genre, Condition bookCondition, long ISBN, long checkOutUserID, int yearPublished, Date checkOutDate, Book nextBook, boolean checkedOut) {
+    public Book(String name, String author, String genre, Condition bookCondition, long ISBN, long checkOutUserID, int yearPublished, Date checkOutDate, Date dueDate, Book nextBook, boolean checkedOut) {
         this.name = name;
         this.author = author;
         this.genre = genre;
@@ -53,6 +57,7 @@ public class Book {
         this.checkOutUserID = checkOutUserID;
         this.yearPublished = yearPublished;
         this.checkOutDate = checkOutDate;
+        this.dueDate = dueDate;
         this.nextBook = nextBook;
         this.checkedOut = checkedOut;
     }
@@ -97,7 +102,19 @@ public class Book {
         this.checkOutUserID = checkOutUserId;
     }
 
+    public Date getCheckOutDate() {
+        return checkOutDate;
+    }
+
     public void setCheckOutDate(Date checkOutDate) {
         this.checkOutDate = checkOutDate;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 }
