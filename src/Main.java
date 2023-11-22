@@ -1,19 +1,10 @@
-import cse214.hw1.Person;
-import cse214.hw1.PersonDataManager;
-import cse214.hw1.PersonDoesNotExistException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        PersonDataManager.buildFromFile("src/moe/cark/hw1/biostats.csv");
-
-        Person p1;
-        try {
-            p1 = PersonDataManager.getPerson("Alex");
-        } catch (PersonDoesNotExistException e) {
-            throw new RuntimeException("person does not exist", e);
-        }
-        System.out.println(p1);
-
-        PersonDataManager.printTable();
+        List<Integer> a = Arrays.stream(new int[10]).map(i -> new Random().nextInt(100)).boxed().toList();
+        System.out.println(a);
     }
 }

@@ -117,4 +117,8 @@ public class Book {
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -10,11 +10,14 @@ public class BookRepository {
         }
     }
 
-    public int ISBNFirstDigit(long ISBN) {
-        while (ISBN > 10) {
-            ISBN /= 10;
+    private static void checkISBN(long ISBN) throws InvalidISBNException {
+        if (ISBN > 9999999999999L) {
+            throw new InvalidISBNException("ISBN must be 13 digits or less");
         }
-        return (int) ISBN;
+    }
+
+    public int ISBNFirstDigit(long ISBN) {
+        return Integer.parseInt(String.format("%013d", ISBN).substring(0, 1));
     }
 
     private Shelf findShelf(long ISBN) {
@@ -52,12 +55,11 @@ public class BookRepository {
         book.setCheckedOut(false);
         book.setCheckOutUserID(0);
     }
+    // TODO
 
     public void checkOutBook(long checkedOutISBN, long checkOutUserID, Date dueDate/*checkedOutDate?*/) throws InvalidISBNException, InvalidUserIDException, BookAlreadyCheckedOutException {
         // isbn must be 13 digits or less
-        if (checkedOutISBN > 9999999999999L) {
-            throw new InvalidISBNException("ISBN must be 13 digits or less");
-        }
+        checkISBN(checkedOutISBN);
 
         //find book
         Book book = findBook(checkedOutISBN);
@@ -77,9 +79,7 @@ public class BookRepository {
 
     public void addBook(/*int*/long addISBN, String addName, String addAuthor, String addGenre, Condition addCondition /*no year!*/) throws InvalidISBNException, BookAlreadyExistsException {
         // isbn must be 13 digits or less
-        if (addISBN > 9999999999999L) {
-            throw new InvalidISBNException("ISBN must be 13 digits or less");
-        }
+        checkISBN(addISBN);
 
         // add book
         findShelf(addISBN).addBook(new Book(addName, addAuthor, addGenre, addCondition, addISBN, 0, 0, new Date(), new Date(), null, false));
@@ -87,9 +87,7 @@ public class BookRepository {
 
     public void removeBook(long removeISBN) throws InvalidISBNException {
         // isbn must be 13 digits or less
-        if (removeISBN > 9999999999999L) {
-            throw new InvalidISBNException("ISBN must be 13 digits or less");
-        }
+        checkISBN(removeISBN);
 
         // remove book
         try {
