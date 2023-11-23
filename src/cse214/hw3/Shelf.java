@@ -172,4 +172,8 @@ public class Shelf {
         this.tailBook = tempShelf.getTailBook();
         // length is unchanged
     }
+
+    public SortCriteria getShelfSortCriteria() {
+        return shelfSortCriteria;
+    }
 }

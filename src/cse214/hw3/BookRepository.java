@@ -16,7 +16,13 @@ public class BookRepository {
         }
     }
 
-    public int ISBNFirstDigit(long ISBN) {
+    private static void checkUserID(long userID) throws InvalidUserIDException {
+        if (userID > 9999999999L) {
+            throw new InvalidUserIDException("User ID must be 10 digits or less");
+        }
+    }
+
+    private int ISBNFirstDigit(long ISBN) {
         return Integer.parseInt(String.format("%013d", ISBN).substring(0, 1));
     }
 
@@ -35,46 +41,42 @@ public class BookRepository {
         return null;
     }
 
-    public void checkInBook(/*int*/long checkedInISBN, /*int*/long checkInUserID) /*throws???*/ {
-        // find book
+    public void checkInBook(/*int*/long checkedInISBN, /*int*/long checkInUserID) throws InvalidISBNException, BookNotCheckedOutException, BookCheckedOutBySomeoneElseException, InvalidUserIDException, BookDoesNotExistException {
+        // isbn must be 13 digits or less
+        checkISBN(checkedInISBN);
+        // user id must be 10 digits or less
+        checkUserID(checkInUserID);
+
         Book book = findBook(checkedInISBN);
 
         // check in book
-        if (book == null) {
-            System.out.println("Book not found"); // TODO throw
-            return;
-        }
-        if (!book.getCheckedOut()) {
-            System.out.println("Book not checked out"); // TODO throw
-            return;
-        }
-        if (book.getCheckOutUserID() != checkInUserID) { // i guess???
-            System.out.println("Book not checked out by user"); // TODO throw
-            return;
-        }
+        if (book == null) throw new BookDoesNotExistException("Book not found: %013d".formatted(checkedInISBN));
+        if (!book.getCheckedOut()) throw new BookNotCheckedOutException("Book not checked out");
+        if (book.getCheckOutUserID() != checkInUserID)
+            throw new BookCheckedOutBySomeoneElseException("Book checked out by someone else");
+
         book.setCheckedOut(false);
         book.setCheckOutUserID(0);
+        book.setCheckOutDate(new Date());
     }
-    // TODO
 
-    public void checkOutBook(long checkedOutISBN, long checkOutUserID, Date dueDate/*checkedOutDate?*/) throws InvalidISBNException, InvalidUserIDException, BookAlreadyCheckedOutException {
+    public void checkOutBook(long checkedOutISBN, long checkOutUserID, Date checkOutDate, Date dueDate) throws InvalidISBNException, InvalidUserIDException, BookAlreadyCheckedOutException {
         // isbn must be 13 digits or less
         checkISBN(checkedOutISBN);
+        // user id must be 10 digits or less
+        checkUserID(checkOutUserID);
 
-        //find book
+        // find book
         Book book = findBook(checkedOutISBN);
 
         // check out book
-        if (book == null) {
-            throw new InvalidISBNException("ISBN not found");
-        }
-        if (book.getCheckedOut()) {
-            throw new BookAlreadyCheckedOutException("Book already checked out");
-        }
+        if (book == null) throw new InvalidISBNException("Book not found: %013d".formatted(checkedOutISBN));
+        if (book.getCheckedOut()) throw new BookAlreadyCheckedOutException("Book already checked out");
+
         book.setCheckedOut(true);
         book.setCheckOutUserID(checkOutUserID);
-        book.setCheckOutDate(new Date()/*current*/);
-        book.setDueDate(dueDate);
+        book.setCheckOutDate(checkOutDate);
+        book.setDueDate(dueDate); // unchecked per instructions (due date can be before checkout date)
     }
 
     public void addBook(/*int*/long addISBN, String addName, String addAuthor, String addGenre, Condition addCondition /*no year!*/) throws InvalidISBNException, BookAlreadyExistsException {
@@ -113,5 +115,9 @@ public class BookRepository {
         } catch (IllegalArgumentException e) {
             throw new InvalidSortCriteriaException("Invalid sort criteria", e);
         }
+    }
+
+    public Shelf getShelf(int shelfInd) {
+        return shelves[shelfInd];
     }
 }

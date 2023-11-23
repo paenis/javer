@@ -53,4 +53,9 @@ public class ReturnLog {
     public void setNextLog(ReturnLog nextLog) {
         this.nextLog = nextLog;
     }
+
+    @Override
+    public String toString() {
+        return "| %013d | %010d | %s |".formatted(ISBN, userID, returnDate);
+    }
 }

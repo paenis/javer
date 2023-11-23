@@ -14,15 +14,18 @@ public class ReturnStack {
         Book checkedOutBook = bookRepoRef.findBook(returnISBN);
         if (checkedOutBook == null) throw new InvalidISBNException("Book not found");
         if (!checkedOutBook.getCheckedOut()) throw new BookNotCheckedOutException("Book not checked out");
-        if (checkedOutBook.getCheckOutUserID() != returnUserID) throw new BookCheckedOutBySomeoneElseException("Book checked out by someone else");
-        if (returnDate.compareTo(checkedOutBook.getCheckOutDate()) < 0) throw new InvalidReturnDateException("Return date is before checkout date");
+        if (checkedOutBook.getCheckOutUserID() != returnUserID)
+            throw new BookCheckedOutBySomeoneElseException("Book checked out by someone else");
+        if (returnDate.compareTo(checkedOutBook.getCheckOutDate()) < 0)
+            throw new InvalidReturnDateException("Return date is before checkout date");
         // book is NOT checked in at this point, only returned
 
         ReturnLog newLog = new ReturnLog(returnISBN, returnUserID, returnDate);
         newLog.setNextLog(topLog);
         topLog = newLog;
 
-        return true;
+        // on time?
+        return (returnDate.compareTo(checkedOutBook.getDueDate()) <= 0);
     }
 
     /**
@@ -37,5 +40,30 @@ public class ReturnStack {
         ReturnLog poppedLog = topLog;
         topLog = topLog.getNextLog();
         return poppedLog;
+    }
+
+    /**
+     * Returns the top log from the stack without removing it.
+     *
+     * @return the top log, or null if the stack is empty
+     */
+    public ReturnLog peekLog() {
+        return topLog;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("|     ISBN      |  User ID   | Return Date |\n");
+        sb.append("+---------------+------------+-------------+\n");
+        //         | 0000000000000 | 0000000000 | 01/01/1999  |
+
+        ReturnLog cursorLog = topLog;
+        while (cursorLog != null) {
+            sb.append(cursorLog).append("\n");
+            cursorLog = cursorLog.getNextLog();
+        }
+
+        return sb.toString();
     }
 }
